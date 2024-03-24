@@ -1,0 +1,22 @@
+Описание алгоритма с использованием псевдокода
+
+def return_money() {
+
+    # получение списка покупателей, для которых задержка по контракту составляет
+    более полугода с указанием идентификаторов пользователя, его банковских данных, контракта и данных эскроу
+    records: {buyer_id, bank_address_id, contractId, escrowId, escrow_amount}[] = execSql(`
+        SELECT B.ID, BBA.ID, E.ESCROW_AMOUNT FROM BUYER B
+        INNER JOIN BUYER_BANK_ADDRESS BBA on B.ID = BBA.B_ID
+        INNER JOIN CONTRACT C on B.ID = C.B_ID
+        INNER JOIN ESCROW E on C.ID = E.C_ID
+        INNER JOIN HOUSING H on C.H_ID = H.ID
+        WHERE CONTRACT_PLAN_OPEN_DATE < DATE_SUB(NOW(), INTERVAL 6 MONTH );
+    `)
+
+    for record in records():
+        startTransaction()
+        addCountractStatus(contractId, "CANCELED")
+        addReturning(escrowId)
+        processReturning(escrowAmount, bank_address_id)
+        commitTransaction()
+}

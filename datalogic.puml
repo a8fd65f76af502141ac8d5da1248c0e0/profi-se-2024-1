@@ -1,0 +1,131 @@
+@startuml
+
+skinparam lineType polyline
+skinparam entity {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+entity BUYER {
+   TYPE: enum('legal', 'physical')
+   --PK--
+   ID: int
+}
+entity BUYER_BANK_ADDRESS {
+   ADDRESS_INFO: varchar(255)
+   --FK--
+   B_ID: int
+   --PK--
+   ID: int
+}
+entity BUYER_LEGAL {
+   LEGAL_NAME: varchar(255)
+   LEGAL_ADDRESS: varchar(255)
+   OGRN: varchar(255)
+   --FK--
+   B_ID: int
+   --PK--
+   ID: int
+}
+entity BUYER_PHYSICAL {
+   FIRST_NAME: varchar(255)
+   LAST_NAME: varchar(255)
+   FATHER_NAME: varchar(255)
+   PASSPORT_SERIAL: varchar(255)
+   PASSPORT_NUMBER: varchar(255)
+   PASSPORT_ADDRESS: varchar(255)
+   --FK--
+   B_ID: int
+   --PK--
+   ID: int
+}
+entity CONTRACT {
+   B_ID: int
+   D_ID: int
+   H_ID: int
+   SUM: int
+   CONTRACT_PLAN_OPEN_DATE: date
+   --PK--
+   ID: int
+}
+entity CONTRACT_STATUS {
+   STATUS: enum('active', 'finished', 'canceled')
+   C_ID: int
+   --PK--
+   ID: int
+}
+entity DEVELOPER {
+   NAME: varchar(255)
+   LAW_OGRN: varchar(255)
+   LAW_ADDRESS: varchar(255)
+   ADDITIONAL_INFO: text
+   --PK--
+   ID: int
+}
+entity DEVELOPER_BANK_ADDRESS {
+   ADDRESS_INFO: varchar(255)
+   --FK--
+   D_ID: int
+   --PK--
+   ID: int
+}
+entity ESCROW {
+   ESCROW_AMOUNT: int
+   FROM_BANK_ADDRESS: int
+   TARGET_BANK_ADDRESS: int
+   --FK--
+   C_ID: int
+   --PK--
+   ID: int
+}
+entity ESCROW_RETURNING {
+   CREATED_AT: date
+   --FK--
+   E_ID: int
+   --PK--
+   ID: int
+}
+entity ESCROW_TRANSFER {
+   CREATED_AT: date
+   --FK--
+   E_ID: int
+   --PK--
+   ID: int
+}
+entity HOUSING {
+   ADDRESS_CITY: varchar(255)
+   ADDRESS_STREET: varchar(255)
+   ADDRESS_HOUSE: varchar(255)
+   ADDRESS_ADDITIONAL: varchar(255)
+   --FK--
+   D_ID: int
+   --PK--
+   ID: int
+}
+
+entity HOUSING_STATUS {
+   STATUS: enum('planning', 'build', 'build_stay', 'build_finish')
+   --FK--
+   H_ID: int
+   --PK--
+   ID: int
+}
+
+BUYER_BANK_ADDRESS       }o---||  BUYER                  : "B_ID:ID"
+BUYER_LEGAL             |o---||  BUYER                  : "B_ID:ID"
+BUYER_PHYSICAL          |o---||  BUYER                  : "B_ID:ID"
+CONTRACT                }o---||  BUYER                  : "B_ID:ID"
+CONTRACT                }o---||  DEVELOPER              : "D_ID:ID"
+CONTRACT                }o---||  HOUSING                : "H_ID:ID"
+CONTRACT_STATUS         }o---||  CONTRACT               : "C_ID:ID"
+DEVELOPER_BANK_ADDRESS   }o---||  DEVELOPER              : "D_ID:ID"
+ESCROW                   }o---||  BUYER_BANK_ADDRESS     : "TARGET_BANK_ADDRESS:ID"
+ESCROW                   }o---||  BUYER_BANK_ADDRESS     : "FROM_BANK_ADDRESS:ID"
+ESCROW                   ||---||  CONTRACT               : "C_ID:ID"
+ESCROW_RETURNING         |o---||  ESCROW                 : "E_ID:ID"
+ESCROW_TRANSFER         |o---||  ESCROW                 : "E_ID:ID"
+HOUSING                  }o---|| DEVELOPER              : "D_ID:ID"
+HOUSING_STATUS          }o---||  HOUSING                : "H_ID:ID"
+
+@enduml
